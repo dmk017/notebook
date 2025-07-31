@@ -1,0 +1,50 @@
+[tool.poetry]
+name = "fortuna"
+version = "0.1.0"
+description = ""
+authors = ["Danil <aleksanov.03@mail.ru>"]
+readme = "README.md"
+packages = [
+    {include = "src"}
+]
+
+[tool.poetry.dependencies]
+python = ">=3.11,<4.0"
+fastapi = "^0.110.0"
+uvicorn = {extras = ["standard"], version = "^0.20.0"}
+jinja2 = "^3.1.2"
+python-multipart = "^0.0.5"
+pymongo = "^4.0.1"
+returns = "^0.22.0"
+passlib = "^1.7.4"
+python-jose = {extras = ["cryptography"], version = "^3.3.0"}
+dataclasses-json = "^0.5.7"
+python-dateutil = "^2.8.2"
+xmltodict = "^0.13.0"
+requests = "^2.31.0"
+libmagic = "^1.0"
+pydantic = "^2.3.0"
+pydantic-settings = "^2.2.1"
+fastapi-keycloak = "^1.0.11"
+python-keycloak = "^3.12.0"
+python-magic = "0.4.15"
+openpyxl = "^3.1.5"
+tzlocal = "^5.2"
+pytz = "^2024.1"
+transliterate = "^1.10.2"
+
+
+[tool.poetry.group.dev.dependencies]
+bump-pydantic = "^0.8.0"
+pytest = "^8.3.4"
+httpx = "^0.28.1"
+pytest-env = "^1.1.5"
+pandas = "^2.2.3"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+
+[tool.poetry.scripts]
+dev = 'src.server:start'

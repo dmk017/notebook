@@ -1,0 +1,35 @@
+version: "3.7"
+
+networks:
+  # inner apps subnet
+  fb-web-net:
+
+services:
+  fb-oauth-proxy:
+    container_name: fb-oauth-proxy
+    image: quay.io/oauth2-proxy/oauth2-proxy:v7.6.0
+    command: --config /oauth2-proxy.cfg
+    hostname: fb-oauth-proxy
+    volumes:
+      - "./configs/oauth2-proxy-keycloak.dev.cfg:/oauth2-proxy.cfg"
+    restart: unless-stopped
+    networks:
+      fb-web-net:
+    ports:
+      - 3001:4180
+
+  fb-web:
+    platform: linux/amd64
+    container_name: fb-web
+    build:
+      context: ./src
+      dockerfile: Dockerfile.dev
+    hostname: fb-web
+    volumes:
+      - ./src:/app
+    depends_on:
+      - fb-oauth-proxy
+    networks:
+      - fb-web-net
+    ports:
+      - 3002:3000

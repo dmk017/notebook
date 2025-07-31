@@ -1,0 +1,28 @@
+[tool.poetry]
+name = "auth_code_consumer"
+version = "0.1.0"
+description = ""
+authors = ["Danil <aleksanov.03@mail.ru>"]
+readme = "README.md"
+packages = [
+    {include = "src"}
+]
+
+
+[tool.poetry.dependencies]
+python = "^3.11"
+fastapi = "^0.110.2"
+uvicorn = "^0.29.0"
+pydantic-settings = "^2.2.1"
+pymongo = "^4.7.0"
+python-multipart = "^0.0.9"
+requests = "^2.31.0"
+redis = "^5.0.4"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+dev = 'src.server:start'

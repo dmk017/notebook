@@ -1,0 +1,37 @@
+services:
+  gelios-postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: rRolUuSpM2IjNZ1jN5W
+      POSTGRES_PASSWORD: admURUHPfJG8YkgPJ3SbuKJW7dKfOGZwin
+      POSTGRES_DB: gelios_db
+      POSTGRES_PORT: 5432
+    volumes:
+      - ./volumes/gelios_pdb:/var/lib/postgresql/data
+    networks:
+      - gelios-dev-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U rRolUuSpM2IjNZ1jN5W -d gelios_db"]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+      start_period: 10s
+
+  gelios-api:
+    hostname: gelios-api
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    volumes:
+      - ./backend/src:/gelios/src
+    env_file:
+      - ./backend/.env.dev
+    depends_on:
+      gelios-postgres:
+        condition: service_healthy
+    networks:
+      - gelios-dev-net
+    ports:
+      - 8000:5002
+
+  

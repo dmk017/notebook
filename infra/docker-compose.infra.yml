@@ -1,0 +1,121 @@
+# version: "3.7"
+
+networks:
+  proxy-net:
+
+  # inner apps subnet
+  keycloak-net:
+  mongo-db-net:
+  redis-db-net:
+  nextcloud-db-net:
+
+services:
+  nginx:
+    image: nginx:latest
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./infra/configs/prod/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./infra/configs/prod/nginx/ssl/:/etc/nginx/certs/
+    restart: unless-stopped
+    depends_on:
+      - keycloak
+      - portainer
+      - fb-api
+      - gelios-oauth-proxy
+      - fb-oauth-proxy
+      - fb-bot
+    networks:
+      proxy-net:
+        aliases:
+          - oauth.4tuna.space
+          - fb.4tuna.space
+          - nextcloud.4tuna.space
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:24.0.2
+    env_file:
+      - ./infra/envs/prod/.env.prod.infra
+    command: ["start", "--hostname=oauth.4tuna.space"] # start --optimized --hostname-port=3000  // ,  "--hostname-port=9093"
+    networks:
+      - proxy-net
+      - keycloak-net
+
+  keycloak-db:
+    image: postgres:15
+    env_file:
+      - ./infra/envs/prod/.env.prod.infra
+    volumes:
+      - type: bind
+        source: ./volumes/postgres
+        target: /var/lib/postgresql/data
+        bind:
+          create_host_path: true
+    networks:
+      - keycloak-net
+
+  mongo_db:
+    image: mongo:latest
+    env_file:
+      - ./infra/envs/prod/.env.prod.infra
+    networks:
+      - mongo-db-net
+    volumes:
+      - type: bind
+        source: ./volumes/mongo
+        target: /data/db
+        bind:
+          create_host_path: true
+    ports:
+      - 27017:27017
+
+  redis_db:
+    image: redis:latest
+    container_name: redis_db
+    env_file:
+      - ./infra/envs/prod/.env.prod.infra
+    networks:
+      - redis-db-net
+    volumes:
+      - type: bind
+        source: ./volumes/redis
+        target: /data/db
+        bind:
+          create_host_path: true
+
+  portainer:
+    image: portainer/portainer-ce:latest
+    networks:
+      - proxy-net
+    environment:
+      - VIRTUAL_HOST=portainer.4tuna.space
+      - VIRTUAL_PORT=9000
+    volumes:
+        - ./volumes/portainer/data:/data
+        - /var/run/docker.sock:/var/run/docker.sock
+
+  nextcloud_db:
+    image: mariadb:10.6
+    restart: always
+    env_file:
+      - ./infra/envs/prod/.env.prod.nextcloud
+    command: --transaction-isolation=READ-COMMITTED --log-bin=binlog --binlog-format=ROW
+    volumes:
+      - ./volumes/nextcloud_db/data:/var/lib/mysql
+    networks:
+      - nextcloud-db-net
+
+
+  nextcloud:
+    image: nextcloud
+    restart: always
+    env_file:
+      - ./infra/envs/prod/.env.prod.nextcloud
+    links:
+      - nextcloud_db
+    volumes:
+      - ./volumes/nextcloud/html:/var/www/html:rw
+    networks:
+      - proxy-net
+      - nextcloud-db-net

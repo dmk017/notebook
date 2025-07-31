@@ -1,0 +1,12 @@
+# version: "3"
+
+services:
+  admin-api:
+    hostname: admin-api
+    build:
+      context: ./services/admin-api
+      dockerfile: Dockerfile
+    env_file:
+      - ./infra/envs/prod/.env.prod.admin-api
+    networks:
+      - proxy-net

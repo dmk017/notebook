@@ -1,0 +1,13 @@
+
+version: "3"
+
+services:
+  admin-api:
+    hostname: admin-api
+    build:
+      context: ../../services/admin-api
+      dockerfile: Dockerfile
+    env_file:
+      - ../../services/admin-api/.env.local
+    networks:
+      - gelios-dev-net

@@ -1,0 +1,35 @@
+[tool.poetry]
+name = "gelios"
+version = "0.1.0"
+description = ""
+authors = ["Max Bredihin, Artyom Kudryavtsev"]
+packages = [
+    {include = "src"},
+]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+fastapi = "^0.110.0"
+uvicorn = {extras = ["standard"], version = "^0.20.0"}
+sqlalchemy = "2.0"
+python-multipart = "^0.0.5"
+returns = "^0.22.0"
+dataclasses-json = "^0.5.7"
+python-jose = "^3.3.0"
+paramiko = "^3.0.0"
+httpx = "^0.25.1"
+greenlet = "^3.0.3"
+requests = "^2.31.0"
+pyjwt = "^2.8.0"
+python-keycloak = "^3.12.0"
+pydantic = "2.7.1"
+pydantic-settings = "^2.2.1"
+asyncssh = "^2.14.2"
+asyncpg = "^0.30.0"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+dev = 'src.server:start'

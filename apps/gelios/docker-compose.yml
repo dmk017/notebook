@@ -1,0 +1,67 @@
+# version: "3.7"
+
+networks:
+  gelios-prod-net:
+
+services:
+  gelios-postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: rRolUuSpM2IjNZ1jN5W
+      POSTGRES_PASSWORD: admURUHPfJG8YkgPJ3SbuKJW7dKfOGZwin
+      POSTGRES_DB: gelios_db
+      POSTGRES_PORT: 5432
+    volumes:
+      - ./volumes/gelios_pdb:/var/lib/postgresql/data
+    networks:
+      - gelios-prod-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U rRolUuSpM2IjNZ1jN5W -d gelios_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+
+  gelios-api:
+    hostname: gelios-api
+    build:
+      context: ./apps/gelios/backend
+      dockerfile: Dockerfile
+    env_file:
+      - ./apps/gelios/backend/.env.prod
+    depends_on:
+      gelios-postgres:
+        condition: service_healthy
+    networks:
+      - gelios-prod-net
+      - proxy-net
+    ports:
+      - 8000:5002
+
+  gelios-web:
+    platform: linux/amd64
+    container_name: gelios-web
+    hostname: gelios-web
+    build:
+      context: ./apps/gelios/web/src
+      dockerfile: Dockerfile
+    networks:
+      - gelios-prod-net
+
+  gelios-oauth-proxy:
+    container_name: gelios-oauth-proxy
+    image: quay.io/oauth2-proxy/oauth2-proxy:v7.6.0
+    command: --config /oauth2-proxy.cfg
+    hostname: gelios-oauth-proxy
+    volumes:
+      - "./apps/gelios/configs/oauth2-proxy-keycloak.prod.cfg:/oauth2-proxy.cfg"
+    restart: unless-stopped
+    networks:
+      proxy-net:
+      gelios-prod-net:
+    depends_on:
+      - keycloak
+      - gelios-web
+      - gelios-api
+
+

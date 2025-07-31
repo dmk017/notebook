@@ -1,0 +1,21 @@
+services:
+  redis_db:
+    deploy:
+      replicas: 0
+
+  gelios-postgres:
+    deploy:
+      replicas: 0
+      
+  gelios-api:
+    deploy:
+      replicas: 0
+      
+  gelios-web:
+    deploy:
+      replicas: 0
+      
+  gelios-oauth-proxy:
+    deploy:
+      replicas: 0
+      

@@ -1,0 +1,16 @@
+version: "3.7"
+
+services:
+  gelios-web:
+    platform: linux/amd64
+    container_name: gelios-web
+    build:
+      context: ./web/src
+      dockerfile: Dockerfile.dev
+    hostname: gelios-web
+    volumes:
+      - ./web/src:/app
+    networks:
+      - gelios-dev-net
+    ports:
+      - 3002:3000

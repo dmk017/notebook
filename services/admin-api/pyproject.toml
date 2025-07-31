@@ -1,0 +1,24 @@
+[tool.poetry]
+name = "users"
+version = "0.1.0"
+description = "Users service via Keycloak Admin API"
+authors = ["Max Bredihin <billysmalldefend@gmail.com>"]
+readme = "README.md"
+packages = [
+    {include = "src"}
+]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+fastapi = {extras = ["standard"], version = "^0.112.0"}
+pydantic = "^2.8.2"
+pydantic-settings = "^2.4.0"
+python-keycloak = "3.12"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+dev = 'src.server:start'

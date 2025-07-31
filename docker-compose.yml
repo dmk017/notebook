@@ -1,0 +1,10 @@
+include:
+  - path:
+      - ./docker-compose.root.yml
+      - ./infra/docker-compose.infra.yml
+      - ./apps/fb/web/docker-compose.yml
+      - ./services/fb/docker-compose.yml
+      - ./apps/fb/bot/docker-compose.yml
+      - ./services/auth_code_consumer/docker-compose.yml
+      - ./services/admin-api/docker-compose.yml
+      - ./apps/gelios/docker-compose.yml

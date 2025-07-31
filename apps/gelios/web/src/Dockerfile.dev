@@ -1,0 +1,9 @@
+FROM node:current-alpine3.16
+RUN yarn global add typescript ts-node fs 
+RUN mkdir /app
+WORKDIR /app
+COPY package.json ./
+RUN yarn install
+COPY . /app
+
+CMD ["yarn", "dev"]

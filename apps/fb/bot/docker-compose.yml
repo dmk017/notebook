@@ -1,0 +1,16 @@
+# version: '3'
+
+services:
+  fb-bot:
+    hostname: fb-bot
+    env_file:
+      - ./infra/envs/prod/.env.prod.bot
+    build:
+      context: ./apps/fb/bot
+      dockerfile: Dockerfile
+    depends_on:
+      - redis_db
+    networks:
+      - redis-db-net
+      - proxy-net
+

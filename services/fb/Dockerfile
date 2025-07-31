@@ -1,0 +1,35 @@
+# Этап 1: Сборка зависимостей
+FROM python:3.12.2-slim as builder
+
+WORKDIR /app
+
+# Устанавливаем Poetry
+RUN pip install --no-cache-dir poetry
+
+# Копируем только необходимые файлы для Poetry
+COPY pyproject.toml poetry.lock ./
+
+# Экспортируем зависимости в requirements.txt
+RUN poetry config virtualenvs.create false \
+  && poetry export -f requirements.txt --output requirements.txt --without-hashes
+
+# Этап 2: Сборка образа приложения
+FROM python:3.12.2-slim
+
+WORKDIR /app
+
+# Копируем requirements.txt из предыдущего этапа
+COPY --from=builder /app/requirements.txt .
+
+RUN apt-get clean && apt-get update && apt-get install -y libmagic-dev
+
+# Устанавливаем зависимости
+RUN pip install --no-cache-dir --upgrade pip \
+  && pip install --no-cache-dir -r requirements.txt
+
+# Копируем исходный код приложения
+COPY ./src ./src
+COPY ./docker-entrypoint.sh ./docker-entrypoint.sh
+
+RUN chmod +x docker-entrypoint.sh
+CMD ["/bin/sh", "docker-entrypoint.sh"]

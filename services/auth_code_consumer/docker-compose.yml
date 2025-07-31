@@ -1,0 +1,17 @@
+# version: '3'
+services:
+  accs:
+    build:
+      context: ./services/auth_code_consumer
+      dockerfile: Dockerfile
+    hostname: accs
+    env_file:
+      - ./infra/envs/prod/.env.prod.accs
+    ports:
+      - 5009:5009
+    depends_on:
+      - redis_db
+    networks:
+      - redis-db-net
+      - proxy-net
+
